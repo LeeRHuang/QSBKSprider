@@ -44,8 +44,7 @@ def handleSoupData(soup):
     # users = soup.select('div.author.clearfix > a > img') #获取div 标签，class为author clearfix下所有 a 标签下的 img 标签
     users = soup.select('div.author.clearfix img')  # 获取div 标签，class为author clearfix下所有img的标签和上面效果一样
     ages = soup.select('div.author.clearfix > div')
-    contents = soup.select('a > div > span')
-    voteValue = soup.select('div.stats > span.stats-vote')[0].get_text()
+    contents = soup.select('a.contentHerf > div > span')
     votes = soup.select('div.stats > span.stats-vote > i.number')
     comments = soup.select('div.stats > span.stats-comments > a')
 
@@ -55,12 +54,13 @@ def handleSoupData(soup):
         ageCount = age.get_text()
         gender = age.get('class')
         genderName = genderCompare(gender)
+        voteValue = vote.get_text()
         contentValue = content.get_text()  # 获取标签中的文本
         commentValue = comment.get_text()
-        print('头像：','http:' + img,'\n','昵称：',title,'\n','年龄：',ageCount,'\n','性别：',genderName,'\n','内容：',contentValue,
-              voteValue,'\n',commentValue)
+        print('头像：','http:' + img,'\n','昵称：',title,'\n','年龄：',ageCount,'\n','性别：',genderName,'\n','内容：',contentValue,'\n',
+              voteValue,'好笑','\n',commentValue)
         text = '头像：'+format('http:' + img)+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
-               '内容：'+contentValue+voteValue+'\n'+commentValue
+               '内容：'+contentValue+'\n'+voteValue+'好笑'+'\n'+commentValue
         cacheData(text)
 
 
@@ -76,16 +76,16 @@ def cacheData(text):
     :return:
     '''
     with codecs.open('data.txt','a',encoding='utf-8') as f:
-        f.write(text)
+        f.write(text+'\n')
 
 
 
 if __name__ == '__main__':
 
     ''''主程序入口'''
-    # soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
-    # handleSoupData(soup)
-    for url in urls:
-        time.sleep(2)
-        soup = loadData(url)
-        handleSoupData(soup)
+    soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
+    handleSoupData(soup)
+    # for url in urls:
+    #     time.sleep(2)
+    #     soup = loadData(url)
+    #     handleSoupData(soup)
