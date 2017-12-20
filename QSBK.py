@@ -76,16 +76,16 @@ def cacheData(text):
     :return:
     '''
     with codecs.open('data.txt','a',encoding='utf-8') as f:
-        f.write(text+'\n')
+        f.write(text+'-----------------------------------------------------------'+'\n')
 
 
 
 if __name__ == '__main__':
 
     ''''主程序入口'''
-    soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
-    handleSoupData(soup)
-    # for url in urls:
-    #     time.sleep(2)
-    #     soup = loadData(url)
-    #     handleSoupData(soup)
+    # soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
+    # handleSoupData(soup)
+    for url in urls:
+        time.sleep(2)
+        soup = loadData(url)
+        handleSoupData(soup)
