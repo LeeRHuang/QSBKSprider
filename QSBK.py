@@ -1,6 +1,7 @@
+# -*- coding:utf-8 -*-
 from bs4 import BeautifulSoup
 import requests
-import string
+import codecs
 import time
 
 '''格式化取从page 1到13的地址，为分页准备，{}是格式化需要填充的字符串值，format()是字符串格式化,str(i)将整形转成字符型,range(1,14,1)三个参数意义:第一个1是指定开始的索引
@@ -58,12 +59,32 @@ def handleSoupData(soup):
         commentValue = comment.get_text()
         print('头像：','http:' + img,'\n','昵称：',title,'\n','年龄：',ageCount,'\n','性别：',genderName,'\n','内容：',contentValue,
               voteValue,'\n',commentValue)
+        text = '头像：'+format('http:' + img)+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
+               '内容：'+contentValue+voteValue+'\n'+commentValue
+        cacheData(text)
+
+
+
+def cacheData(text):
+    '''
+    1.使用 with 避免文件写入句柄还没有关闭又写入
+    2.使用 codecs 帮助读取文件时候自动转码
+    3.指定编码方式，ASCII(American standard Code Information Interchange)是英文和其他字符的编码方式；GBK 汉字编码方式；
+    UTF-8 是 UniCode 编码方式的一种实现，好比英语是国际通用语言
+    4.使用 a 这种 model 模式，新的内容将会被写入到已有内容之后。如果该文件不存在，创建新文件进行写入。
+    :param text:
+    :return:
+    '''
+    with codecs.open('data.txt','a',encoding='utf-8') as f:
+        f.write(text)
 
 
 
 if __name__ == '__main__':
 
     ''''主程序入口'''
+    # soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
+    # handleSoupData(soup)
     for url in urls:
         time.sleep(2)
         soup = loadData(url)
