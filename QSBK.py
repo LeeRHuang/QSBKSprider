@@ -2,12 +2,18 @@
 from bs4 import BeautifulSoup
 import requests
 import codecs
+import xlwt
 import time
 
 '''格式化取从page 1到13的地址，为分页准备，{}是格式化需要填充的字符串值，format()是字符串格式化,str(i)将整形转成字符型,range(1,14,1)三个参数意义:第一个1是指定开始的索引
 第二个14是截止到的索引位置，不包含该索引值，第三个1表示间隔的值，综合表达意思是取1-13，间隔值为1
 '''
 urls = ['https://www.qiushibaike.com/8hr/page/{}/'.format(str(i)) for i in range(1,14,1)]
+
+'''
+声明一个接受数据数组
+'''
+dataArr = []
 
 '''配置请求头'''
 headers = {
@@ -59,10 +65,21 @@ def handleSoupData(soup):
         commentValue = comment.get_text()
         print('头像：','http:' + img,'\n','昵称：',title,'\n','年龄：',ageCount,'\n','性别：',genderName,'\n','内容：',contentValue,'\n',
               voteValue,'好笑','\n',commentValue)
-        text = '头像：'+format('http:' + img)+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
+        text = '头像：'+format('https:' + img)+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
                '内容：'+contentValue+'\n'+voteValue+'好笑'+'\n'+commentValue
-        cacheData(text)
+        cacheData(text) #缓存到txt文件中
 
+        #组装字典
+        dic = {
+            u'昵称': title,
+            u'头像': format('https:' + img),
+            u'年龄': ageCount,
+            u'性别': genderName,
+            u'内容': contentValue,
+            u'好笑': voteValue,
+            u'评论': commentValue
+        }
+        dataArr.append(dic)
 
 
 def cacheData(text):
@@ -79,13 +96,43 @@ def cacheData(text):
         f.write(text+'-----------------------------------------------------------'+'\n')
 
 
+def saveContent(arr):
+    workbook = xlwt.Workbook()
+    worksheet = workbook.add_sheet('QSBK Sheet')
+    alignment = xlwt.Alignment()
+    alignment.horz = xlwt.Alignment.HORZ_CENTER
+    alignment.vert = xlwt.Alignment.VERT_CENTER
+    style = xlwt.XFStyle()  # 居中
+    style.alignment = alignment
+
+    '''
+    声明表头
+    '''
+    titles = [u'昵称', u'头像', u'年龄', u'性别', u'内容', u'好笑', u'评论']
+
+    '''
+    循环遍历
+    '''
+    for c in range(len(titles)):
+        title = titles[c]
+        worksheet.write(0, c, title, style)
+        for r in range(len(arr)):
+            worksheet.write(r+1,c,arr[r][titles[c]])
+
+    workbook.save('QSBK.xls')
+
+
 
 if __name__ == '__main__':
 
     ''''主程序入口'''
     # soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
     # handleSoupData(soup)
+
     for url in urls:
         time.sleep(2)
         soup = loadData(url)
         handleSoupData(soup)
+
+    saveContent(dataArr)
+    print('爬完啦，打开 excle 看看吧')
