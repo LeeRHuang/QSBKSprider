@@ -6,3 +6,8 @@
 2. python3.6 环境自带了 *pip* 包管理工具，安装完环境后，可以在终端 cd 到项目目录下，执行 `pip3 install BeautifulSoup`  `pip3 install requests`  `pip3 install BeautifulSoup`  `pip3 install codecs`  `pip3 install xlwt`  安装这些依赖的第三方库
 3. 安装完三方库之后，在当前项目目录下，执行 `python3 QSBKSprider.py`
 
+# 目标
+- 增强对 Excle 表格数据处理
+- 提取计算出一些数据出现的频率，形成云图
+- 多线程爬取，定时启动爬虫
+
