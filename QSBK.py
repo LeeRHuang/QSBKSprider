@@ -4,6 +4,9 @@ import requests
 import codecs
 import xlwt
 import time
+from wordcloud import WordCloud   #词云库
+import matplotlib.pyplot as plt     #数学绘图库
+import jieba               #分词库
 
 '''格式化取从page 1到13的地址，为分页准备，{}是格式化需要填充的字符串值，format()是字符串格式化,str(i)将整形转成字符型,range(1,14,1)三个参数意义:第一个1是指定开始的索引
 第二个14是截止到的索引位置，不包含该索引值，第三个1表示间隔的值，综合表达意思是取1-13，间隔值为1
@@ -65,7 +68,7 @@ def handleSoupData(soup):
         commentValue = comment.get_text()
         print('头像：','http:' + img,'\n','昵称：',title,'\n','年龄：',ageCount,'\n','性别：',genderName,'\n','内容：',contentValue,'\n',
               voteValue,'好笑','\n',commentValue)
-        text = '头像：'+format('https:' + img)+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
+        text = '头像：'+'http:' + img+'\n'+'昵称：'+title+'\n'+'年龄：'+ageCount+'\n'+'性别：'+genderName+'\n'+\
                '内容：'+contentValue+'\n'+voteValue+'好笑'+'\n'+commentValue
         cacheData(text) #缓存到txt文件中
 
@@ -95,6 +98,28 @@ def cacheData(text):
     with codecs.open('data.txt','a',encoding='utf-8') as f:
         f.write(text+'-----------------------------------------------------------'+'\n')
 
+'''
+生成云图
+'''
+def generateWord_pic():
+
+    with open('data.txt', 'r',encoding='utf-8') as f:
+        text = f.read()
+        cute_text = jieba.cut(text)
+        result = '/'.join(cute_text)
+        print(result)
+
+        wc = WordCloud(font_path=r"msyh.ttf", background_color='white', width=800,
+                       height=600, max_font_size=50,
+                       max_words=1000)  # ,min_font_size=10)#,mode='RGBA',colormap='pink')
+        wc.generate(result)
+        wc.to_file(r"wordcloud.png")  # 按照设置的像素宽高度保存绘制好的词云图，比下面程序显示更清晰
+        # 4、显示图片
+        plt.figure("词云图")  # 指定所绘图名称
+        plt.imshow(wc)  # 以图片的形式显示词云
+        plt.axis("off")  # 关闭图像坐标系
+        plt.show()
+
 
 def saveContent(arr):
     workbook = xlwt.Workbook()
@@ -122,12 +147,16 @@ def saveContent(arr):
     workbook.save('QSBK.xls')
 
 
+def testSignle():
+    #单页的测试数据
+    soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
+    handleSoupData(soup)
+
 
 if __name__ == '__main__':
 
     ''''主程序入口'''
-    # soup = loadData('https://www.qiushibaike.com/8hr/page/1/')
-    # handleSoupData(soup)
+    # testSignle()
 
     for url in urls:
         time.sleep(2)
@@ -136,3 +165,4 @@ if __name__ == '__main__':
 
     saveContent(dataArr)
     print('爬完啦，打开 excle 看看吧')
+    generateWord_pic()
